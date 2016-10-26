@@ -15,8 +15,6 @@ npm install -g @digix/doxity
 npm install --save-dev @digix/doxity
 ```
 
-You can then use `npm run docs:[command]` as a proxy for `doxity [command]`.
-
 ## Usage
 
 The `doxity` cli tool is designed for npm/solidity projects. It's designed for use with [Truffle](https://github.com/ConsenSys/truffle).
@@ -53,6 +51,8 @@ Unless you override them, default arguments will be used:
   * `--target` doxity source files directory - defaults to `./scripts/doxity`
   * `--out` folder to output the generated html (relative to project root) - defaults to `docs`
 
+## Protip
+
 If you are installing locally, you could add the following to your `package.json`:
 
 ```javascript
@@ -66,11 +66,12 @@ If you are installing locally, you could add the following to your `package.json
 },
 ```
 
+You can then use `npm run docs:[command]` as a proxy for `doxity [command]`.
 
 ## Tests
 
-`npm run test`
+TODO
 
 ## License
 
-MIT 2016
+BSD-3-Clause 2016
