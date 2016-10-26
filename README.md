@@ -4,9 +4,11 @@
 
 Uses [gatsby](https://github.com/gatsbyjs/gatsby) to generate beautiful Solidity docs automatically via [natspec](https://github.com/ethereum/wiki/wiki/Ethereum-Natural-Specification-Format).
 
+![Doxity Screenshot](http://i.imgur.com/9S6COQE.png)
+
 ## Installation
 
-You can install `@digix/doxity` globally or locally in your project.
+You can install `@digix/doxity` globally or locally in your project. You'll also need `solc`.
 
 ```bash
 # globally
@@ -14,6 +16,17 @@ npm install -g @digix/doxity
 # project folder
 npm install --save-dev @digix/doxity
 ```
+
+## Quickstart
+
+1. Have a (truffle?) project that contains natspecced contracts.
+2. `doxity init`
+3. `doxity build`
+4. `doxity publish`
+5. Now you'll have a `./docs` folder in your project (start a local http server to open it)
+6. Push to github
+7. Go to your repo options, update 'Github Pages -> Set Source' to 'master branch /docs folder'
+8. Your documentation is live! Why not set up a Travis CI script to automate that whenever you commit?
 
 ## Usage
 
