@@ -74,7 +74,7 @@ export default function ({ target = DEFAULT_TARGET, src = DEFAULT_SRC_DIR, dir =
   });
 
   process.stdout.write(`\r${message.split('').fill(' ').join('')}\r`);
-  process.stdout.write('Documentation data is created! Now use `doxify publish` or `doxify develop`\n');
+  process.stdout.write('Documentation data is created! Now use `doxity publish` or `doxity develop`\n');
 
   const config = {
     compiler: compiler.version,
