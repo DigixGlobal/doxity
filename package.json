@@ -36,6 +36,7 @@
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "nodegit": "^0.16.0",
-    "rimraf": "^2.5.4"
+    "rimraf": "^2.5.4",
+    "tomlify-j0.4": "^1.0.1"
   }
 }

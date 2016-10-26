@@ -1,7 +1,8 @@
-import path from 'path';
 import fs from 'fs';
-import glob from 'glob';
 import childProcess from 'child_process';
+import glob from 'glob';
+import toml from 'toml';
+import tomlify from 'tomlify-j0.4';
 
 import { DEFAULT_SRC_DIR, DEFAULT_TARGET, DEFAULT_PAGES_DIR } from './constants';
 
@@ -25,9 +26,8 @@ export default function ({ target = DEFAULT_TARGET, src = DEFAULT_SRC_DIR, dir =
   const { contracts, ...compiler } = JSON.parse(childProcess.execSync(exec));
   // find the source file and save the page data
   const sources = glob.sync(`${process.env.PWD}/${src}/**/*`);
-  const message = `Generating code for ${sources.length} contracts...`;
-  process.stdout.write(message);
   // for each contract create a json file in the target directory
+  process.stdout.write(`Generating code for ${sources.length} contracts...`);
   Object.keys(contracts).forEach((contractName) => {
     const sourceFile = sources.find((fileName) => {
       const split = fileName.split('/');
@@ -83,18 +83,29 @@ export default function ({ target = DEFAULT_TARGET, src = DEFAULT_SRC_DIR, dir =
         }),
       };
       delete data.methods;
-      fs.writeFileSync(`${output}/${contractName}.json`, JSON.stringify(data));
+      fs.writeFileSync(`${output}/${contractName}.json`, `${JSON.stringify(data)}\n`);
     }
   });
 
-  process.stdout.write(`\r${message.split('').fill(' ').join('')}\r`);
-  process.stdout.write('Documentation data is created! Now use `doxity publish` or `doxity develop`\n');
+  const configFile = `${process.env.PWD}/${target}/config.toml`;
 
-  const config = {
+  // todo inherit from .doxityrc
+  let config = {
     compiler: compiler.version,
     name: pkgConfig.name,
+    license: pkgConfig.license,
     version: pkgConfig.version,
     description: pkgConfig.description,
     homepage: pkgConfig.homepage,
+    author: pkgConfig.author,
+    buildTime: new Date(),
   };
+
+  try { // try marginging with old config
+    config = { ...toml.parse(fs.readFileSync(configFile)), ...config };
+  } catch (e) { /* do nothing */ }
+
+  fs.writeFileSync(configFile, `${tomlify(config)}`);
+
+  process.stdout.write('\rDocumentation data is created! Now use `doxity publish` or `doxity develop`\n');
 }
