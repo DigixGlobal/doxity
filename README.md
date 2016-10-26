@@ -8,7 +8,9 @@ Uses [gatsby](https://github.com/gatsbyjs/gatsby) to generate beautiful Solidity
 
 ## Installation
 
-You can install `@digix/doxity` globally or locally in your project. You'll also need `solc`.
+You can install `@digix/doxity` globally or locally in your project. 
+
+You'll also need solc `0.4.X` installed on your machine.
 
 ```bash
 # globally
@@ -19,53 +21,85 @@ npm install --save-dev @digix/doxity
 
 ## Quickstart
 
-1. Have a (truffle?) project that contains natspecced contracts.
-2. `doxity init`
-3. `doxity build`
-4. `doxity publish`
-5. Now you'll have a `./docs` folder in your project (start a local http server to open it)
-6. Push to github
-7. Go to your repo options, update 'Github Pages -> Set Source' to 'master branch /docs folder'
-8. Your documentation is live! Why not set up a Travis CI script to automate that whenever you commit?
+1. Have a project that contains natspecced `.sol` contracts in a `contracts` directory.
+1. `doxity init` will clone and set up the boilerplate project
+1. `doxity build` will compile the contracts and get json meta data
+1. optional `doxity develop` will start a development server for editing project files found in `./scripts/doxity`
+1. `doxity publish` will generate static HTML containing documentation
+1. Yo'll have a `./docs` folder in your project which can be easily deployed
+1. Push it to `master` on github
+1. Go to your repo options, update 'Github Pages -> Set Source' to 'master branch /docs folder'
+1. Your documentation is live! Why not set up a Travis CI script to automate that whenever you commit?
 
 ## Usage
 
-The `doxity` cli tool is designed for npm/solidity projects. It's designed for use with [Truffle](https://github.com/ConsenSys/truffle).
+<<<<<<< HEAD
+### `.doxityrc`
 
-Here's an outline of the available commands:
+You can configure all of doxity's options using a `.doxityrc` file at the root of your project, with the following structure:
 
-* `doxity init`
-  * Creates a `./scripts/doxity` directory
-  * Clones [this repo](https://github.com/DigixGlobal/doxity-gatsby-starter-project.git) into it
-  * Runs `npm install` in the doxity directory
-* `doxity build`
-  * Generates Solidity devdocs, userdocs, abi, etc. using `solc`
-  * Formats data and copies output into gatsby project
-  * [TODO] Set up readme, config, copy other project details
-* `doxity develop`
-  * Runs `gatsby develop` start dev server on 8000 - you can then edit files the doxity (gatsby) project
-* `doxity publish`
-  * Runs `gatsby build` to generate the static HTML
-  * Outputs to `./docs`
+```javascript
+// .doxityrc
+{
+  "target": "",
+  "out": "",
+  "dir": "",
+  "src": "",
+  // blacklists and whitelists support globs for directory
+  "blacklist":  {
+    "test/*": true, // if set, doxity will ignroe these contract
+    "ACOwned": true, // if set, will ignore the contract
+    // hide source code but show API docs + Bytecode
+    "DigixMath": {
+      "source": true
+    }, // only show API docs
+    "DoublyLinkedList": {
+      "source": true,
+      "bytecode": true,
+    },
+  },
+  "whitelist": {
+    // only show this contract (see whitelist section below)
+    "ACOwned": true,
+    // only show this contract's source code
+    "DigixMath": {
+      "api": true,
+      "abi": true,
+    },
+    "DigixMath": {
+      "source" true,
+    },
+  },
+}
+```
+
+## Options
+
+| Parameter | Default Value | Description |
+|---|---|---|
+|`source`|[doxity-gatsby](https://github.com/DigixGlobal/doxity-gatsby-starter-project.git)|git url for bootstrapping the gatsby project|
+|`target`|`./scripts/doxity`|gatsby project source files directory
+|`src`|`contracts`|folder that contains the contracts you want to compile|
+|`dir`|`pages/docs`|folder in gatsby project to dump generated docs data|
+|`out`|`docs`|folder to output the generated html (relative to project root)|
+
+## Whitelist & Blacklist
+
+You can specify
+
+
+### Command Line Interface
+
+You can also override these options by passing them to a command tool.
 
 Unless you override them, default arguments will be used:
 
-* `doxity init`
-  * `--source` git url for bootstrappign - defaults to `https://github.com/DigixGlobal/doxity-gatsby-starter-project.git`
-  * `--target` doxity source files directory - defaults to `./scripts/doxity`
-* `doxity build`
-  * `--target` doxity source files directory - defaults to `./scripts/doxity`
-  * `--src` folder that contains the contracts you want to compile - defaults to `contracts`
-  * `--dir` folder in gatsby project to dump generated docs data - defaults to `pages/docs`
-* `doxity develop`
-  * `--target` doxity source files directory - defaults to `./scripts/doxity`
-* `doxity publish`
-  * `--target` doxity source files directory - defaults to `./scripts/doxity`
-  * `--out` folder to output the generated html (relative to project root) - defaults to `docs`
+- `doxity init  --target --source`
+- `doxity build --target --src --dir`
+- `doxity develop --target`
+- `doxity publish --target --out`
 
-## Protip
-
-If you are installing locally, you could add the following to your `package.json`:
+**Protip:** If you are installing locally, you could add the following to your `package.json`:
 
 ```javascript
 "scripts" : {
@@ -83,9 +117,9 @@ You can then use `npm run docs:[command]` as a proxy for `doxity [command]`.
 ## TODO
 
 * [build step] Set up config, copy readme, other project details
-* Options to hide source files / binaries
-* Sourcemaps
-* Better readme
+* Render params if they are in userdocs but not ABI
+* Options to hide / whitelist source files & binaries
+* Sourcemaps, Hash Signatures
 * Demo Site
 * Live web3 instance for testing?
 * Tests
