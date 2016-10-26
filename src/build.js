@@ -6,6 +6,7 @@ import childProcess from 'child_process';
 import { DEFAULT_SRC_DIR, DEFAULT_TARGET, DEFAULT_PAGES_DIR } from './constants';
 
 function getDocs(name, doc) {
+  // TODO add docs anyway if they are not found... ? E.G. for methods
   return doc.methods[Object.keys(doc.methods).find(signature => name === signature.split('(')[0])];
 }
 
@@ -26,11 +27,13 @@ export default function ({ target = DEFAULT_TARGET, src = DEFAULT_SRC_DIR, dir =
   const sources = glob.sync(`${process.env.PWD}/${src}/**/*`);
   const message = `Generating code for ${sources.length} contracts...`;
   process.stdout.write(message);
+  // for each contract create a json file in the target directory
   Object.keys(contracts).forEach((contractName) => {
     const sourceFile = sources.find((fileName) => {
       const split = fileName.split('/');
       return `${contractName}.sol` === split[split.length - 1];
     });
+    // ensure the contract exists
     if (sourceFile) {
       const contract = contracts[contractName];
       const { bin, opcodes } = contract;
@@ -48,26 +51,37 @@ export default function ({ target = DEFAULT_TARGET, src = DEFAULT_SRC_DIR, dir =
         name: contractName,
         source: fs.readFileSync(sourceFile).toString(),
         abiDocs: abi.map((methodAbi) => {
+          // get find relevent docs
           const devDocs = getDocs(methodAbi.name, contractDevDoc) || {};
           const userDocs = getDocs(methodAbi.name, contractUserDoc) || {};
-          // map abi methods to devdoc methods
-          if (devDocs.params) {
-            methodAbi.inputs = methodAbi.inputs.map((param) => {
-              param.description = devDocs.params[param.name];
-              return param;
-            })
-            delete devDocs.params;
-            // TODO map outputs once compiler splits them out
-            // const userMethods = userDocs.methods;
-            // if (userMethods) { delete userMethods.methods; }
+          // map abi inputs to devdoc inputs
+          const params = devDocs.params || {};
+          const inputs = methodAbi.inputs.map(param => ({ ...param, description: params[param.name] }));
+          // don't write this
+          delete devDocs.params;
+
+          // START HACK workaround pending https://github.com/ethereum/solidity/issues/1277
+          // TODO map outputs properly once compiler splits them out
+          // in the meantime, use json array
+          // parse devDocs.return as a json object
+          let outputs;
+          try {
+            const outputParams = JSON.parse(devDocs.return);
+            outputs = methodAbi.outputs.map(param => ({ ...param, description: outputParams[param.name] }));
+          } catch (e) {
+            outputs = methodAbi.outputs;
           }
+          // END HACK
+
           return {
             ...devDocs,
             ...userDocs,
             ...methodAbi,
-          }
+            inputs,
+            outputs,
+          };
         }),
-      }
+      };
       delete data.methods;
       fs.writeFileSync(`${output}/${contractName}.json`, JSON.stringify(data));
     }
