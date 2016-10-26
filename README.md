@@ -85,6 +85,8 @@ You can then use `npm run docs:[command]` as a proxy for `doxity [command]`.
 * [build step] Set up config, copy readme, other project details
 * Options to hide source files / binaries
 * Sourcemaps
+* Better readme
+* Demo Site
 * Live web3 instance for testing?
 * Tests
 
