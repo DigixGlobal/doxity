@@ -12,7 +12,7 @@
   "bin": {
     "doxity": "./lib/bin/doxity.js"
   },
-  "license": "MIT",
+  "license": "BSD-3-Clause",
   "author": "Chris Hitchcott <hitchcott@gmail.com> (http://hitchcott.com)",
   "repository": {
     "type": "git",
