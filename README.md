@@ -8,7 +8,7 @@ Uses [gatsby](https://github.com/gatsbyjs/gatsby) to generate beautiful Solidity
 
 ## Installation
 
-You can install `@digix/doxity` globally or locally in your project. 
+You can install `@digix/doxity` globally or locally in your project.
 
 You'll also need solc `0.4.X` installed on your machine.
 
@@ -116,13 +116,15 @@ You can then use `npm run docs:[command]` as a proxy for `doxity [command]`.
 
 ## TODO
 
-* [build step] Set up config, copy readme, other project details
-* Render params if they are in userdocs but not ABI
-* Options to hide / whitelist source files & binaries
-* Sourcemaps, Hash Signatures
-* Demo Site
-* Live web3 instance for testing?
-* Tests
+* 0.1.0
+  * Options to hide / whitelist source files & binaries
+  * Render params if they are in userdocs but not ABI
+  * Demo Site
+* 1.0.0
+  * Tests
+  * Sourcemaps, Hash Signatures
+* 1.x
+  * Live web3 instance for testing?
 
 ## License
 

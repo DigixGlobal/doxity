@@ -4,7 +4,7 @@ import glob from 'glob';
 import toml from 'toml';
 import tomlify from 'tomlify-j0.4';
 
-import { DEFAULT_SRC_DIR, DEFAULT_TARGET, DEFAULT_PAGES_DIR } from './constants';
+import { DEFAULT_SRC_DIR, DEFAULT_TARGET, DEFAULT_PAGES_DIR, CONFIG_FILE, README_FILE, README_TARGET } from './constants';
 
 function getDocs(name, doc) {
   // TODO add docs anyway if they are not found... ? E.G. for methods
@@ -87,7 +87,7 @@ export default function ({ target = DEFAULT_TARGET, src = DEFAULT_SRC_DIR, dir =
     }
   });
 
-  const configFile = `${process.env.PWD}/${target}/config.toml`;
+  const configFile = `${process.env.PWD}/${target}/${CONFIG_FILE}`;
 
   // todo inherit from .doxityrc
   let config = {
@@ -102,10 +102,29 @@ export default function ({ target = DEFAULT_TARGET, src = DEFAULT_SRC_DIR, dir =
   };
 
   try { // try marginging with old config
-    config = { ...toml.parse(fs.readFileSync(configFile)), ...config };
-  } catch (e) { /* do nothing */ }
+    config = { ...toml.parse(fs.readFileSync(`${process.env.PWD}/${target}/${CONFIG_FILE}`)), ...config };
+  } catch (e) {
+    /* do nothing */
+    console.log('Error copying config', e);
+  }
 
   fs.writeFileSync(configFile, `${tomlify(config)}`);
+
+  // copy the readme
+  try {
+    const readmeFile = glob.sync(`${process.env.PWD}/${README_FILE}`, { nocase: true })[0];
+    console.log("found readme", readmeFile);
+    const readmeTarget = `${process.env.PWD}/${target}/${README_TARGET}`;
+    console.log('target is', readmeTarget);
+    if (fs.existsSync(readmeTarget)) {
+      console.log('removing', readmeTarget);
+      fs.unlinkSync(readmeTarget);
+    }
+    fs.writeFileSync(readmeTarget, fs.readFileSync(readmeFile));
+  } catch (e) {
+    /* do nothing */
+    console.log('Error copying readme file', e);
+  }
 
   process.stdout.write('\rDocumentation data is created! Now use `doxity publish` or `doxity develop`\n');
 }
