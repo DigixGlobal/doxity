@@ -38,11 +38,10 @@ Here's an outline of the available commands:
   * Creates a `./scripts/doxity` directory
   * Clones [this repo](https://github.com/DigixGlobal/doxity-gatsby-starter-project.git) into it
   * Runs `npm install` in the doxity directory
-  * [TODO] Set up config, copy other project details
-* `doxity compile`
+* `doxity build`
   * Generates Solidity devdocs, userdocs, abi, etc. using `solc`
   * Formats data and copies output into gatsby project
-  * [TODO] Copies `README.md` into gatsby projec
+  * [TODO] Set up readme, config, copy other project details
 * `doxity develop`
   * Runs `gatsby develop` start dev server on 8000 - you can then edit files the doxity (gatsby) project
 * `doxity publish`
@@ -81,9 +80,13 @@ If you are installing locally, you could add the following to your `package.json
 
 You can then use `npm run docs:[command]` as a proxy for `doxity [command]`.
 
-## Tests
+## TODO
 
-TODO
+* [build step] Set up config, copy readme, other project details
+* Options to hide source files / binaries
+* Sourcemaps
+* Live web3 instance for testing?
+* Tests
 
 ## License
 
