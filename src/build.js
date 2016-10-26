@@ -44,7 +44,7 @@ export default function ({ target = DEFAULT_TARGET, src = DEFAULT_SRC_DIR, dir =
         abi,
         bin,
         opcodes,
-        fileName: sourceFile,
+        fileName: sourceFile.replace(process.env.PWD, ''),
         name: contractName,
         source: fs.readFileSync(sourceFile).toString(),
         abiDocs: abi.map((methodAbi) => {
