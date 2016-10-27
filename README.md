@@ -4,6 +4,19 @@
 
 Uses [gatsby](https://github.com/gatsbyjs/gatsby) to generate beautiful Solidity docs automatically via [natspec](https://github.com/ethereum/wiki/wiki/Ethereum-Natural-Specification-Format).
 
+## Features
+
+* Automatically document contracts and methods from your code
+* Generate static HTMl that can be served from github pages
+* Fully customisable output using ReactJS
+* Syntax highlighting
+* Slick, minimalist [semantic-ui](https://github.com/Semantic-Org/Semantic-UI-React) UX
+* For each contract, options for whitelisting
+  * Methods Documentation
+  * ABI
+  * Bytecode
+  * Source Code
+
 ![Doxity Screenshot](http://i.imgur.com/9S6COQE.png)
 
 ## Installation
@@ -21,15 +34,38 @@ npm install --save-dev @digix/doxity
 
 ## Quickstart
 
-1. Have a project that contains natspecced `.sol` contracts in a `contracts` directory.
-1. `doxity init` will clone and set up the boilerplate project
+1. Have a project that contains natspecced* `.sol` contracts in a `contracts` directory.
+1. `doxity init` will clone and set up the boilerplate gatsby project - files found in `./scripts/doxity`
 1. `doxity build` will compile the contracts and get json meta data
-1. optional `doxity develop` will start a development server for editing project files found in `./scripts/doxity`
-1. `doxity publish` will generate static HTML containing documentation
-1. Yo'll have a `./docs` folder in your project which can be easily deployed
+1. optional `doxity develop` will start a development server for editing gatsby project
+1. `doxity publish` will generate static HTML containing documentation to `./docs`
+
+**Publish it to github**
+
+1. Ensure you have set `linkPrefix` in `scripts/doxity/config.toml` to be equal to your repo's name (e.g. `/my-project`)
+1. After publishing, you'll end up with a `./docs` folder in your project which can be easily deployed
 1. Push it to `master` on github
 1. Go to your repo options, update 'Github Pages -> Set Source' to 'master branch /docs folder'
 1. Your documentation is live! Why not set up a Travis CI script to automate that whenever you commit?
+
+\* N.B. Currently Solidity doesn't support multiple `@return` values. Pass it a JSON object until it's patched. EG:
+
+```javascript
+// natspec example - appears above each method
+/**
+@notice Get user's information from their EOA/Contract address
+@dev Some more techncial explanation here
+@param _account the EOA or contract address associated with the user
+@param _anotherParam this is just an example of passing a second param
+@return {
+  "_feeaccount": "The contract address for storage fee payments",
+  "_recastaccount": "The contract address for recasting tokens",
+  "_assetcount": "The number of items associated with this account",
+  "_assetstartindex": "The starting index of the user's items collection"
+}
+*/
+function getUser(address _account) ...
+```
 
 ## Usage
 
@@ -95,15 +131,14 @@ You can then use `npm run docs:[command]` as a proxy for `doxity [command]`.
 ## TODO
 
 * 0.1.0
-  * Options to hide / whitelist source files & binaries
-  * Code highlighting
   * Demo Site
 * 1.0.0
-  * AST parsing: render params that are in devdocs but not ABI (e.g. methods)
-  * Tests
+  * AST parsing: render params that are in devdocs but not ABI (e.g. modifiers)
   * Sourcemaps, Hash Signatures
+  * Tests
 * 1.x
-  * Live web3 instance for testing?
+  * Versioning
+  * Pudding integration? Automatically generate forms + web3 instance for testing via GUI?
 
 ## License
 
