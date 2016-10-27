@@ -23,7 +23,7 @@ const methods = {
 
 function populateArguments(passed) {
   // cruft from minimist
-  delete passed._
+  delete passed._;
   // fallback to defaults
   const defaults = {
     target: DEFAULT_TARGET,
@@ -41,7 +41,7 @@ function populateArguments(passed) {
   return { ...defaults, ...saved, ...passed };
 }
 // wire up defaults
-const wrappedMethods = {}
+const wrappedMethods = {};
 Object.keys(methods).forEach((key) => {
   wrappedMethods[key] = (args) => {
     const newArgs = populateArguments(args);

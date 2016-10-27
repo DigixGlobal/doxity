@@ -11,7 +11,7 @@ function getDocs(name, doc) {
   return doc.methods[Object.keys(doc.methods).find(signature => name === signature.split('(')[0])];
 }
 
-export default function ({ target, src, dir }) {
+export default function ({ target, src, dir, whitelist }) {
   const output = `${process.env.PWD}/${target}/${dir}`;
   if (!fs.existsSync(output)) { throw new Error(`Output directory ${output} not found, are you in the right directory?`); }
   // clear out the output folder (remove all json files)
@@ -27,7 +27,15 @@ export default function ({ target, src, dir }) {
   const sources = glob.sync(`${process.env.PWD}/${src}/**/*`);
   // for each contract create a json file in the target directory
   process.stdout.write(`Generating code for ${sources.length} contracts...`);
+  // do we need to check for whitelist?
+  let defaultWhitelist = { source: true, bytecode: true, abi: true, methods: true };
+  if (whitelist && Object.keys(whitelist).length > 0) {
+    defaultWhitelist = whitelist.all || {};
+  }
   Object.keys(contracts).forEach((contractName) => {
+    // determine whether we should be skipped
+    const myWhitelist = { ...defaultWhitelist, ...(whitelist || {})[contractName] };
+    // get the source file
     const sourceFile = sources.find((fileName) => {
       const split = fileName.split('/');
       return `${contractName}.sol` === split[split.length - 1];
@@ -43,13 +51,14 @@ export default function ({ target, src, dir }) {
       const data = {
         author,
         title,
-        abi,
-        bin,
-        opcodes,
-        fileName: sourceFile.replace(process.env.PWD, ''),
         name: contractName,
-        source: fs.readFileSync(sourceFile).toString(),
-        abiDocs: abi.map((methodAbi) => {
+        fileName: sourceFile.replace(process.env.PWD, ''),
+        // only pass these if they are whitelisted
+        abi: myWhitelist.abi && abi,
+        bin: myWhitelist.bytecode && bin,
+        opcodes: myWhitelist.bytecode && opcodes,
+        source: myWhitelist.source && fs.readFileSync(sourceFile).toString(),
+        abiDocs: myWhitelist.methods && abi.map((methodAbi) => {
           // get find relevent docs
           const devDocs = getDocs(methodAbi.name, contractDevDoc) || {};
           const userDocs = getDocs(methodAbi.name, contractUserDoc) || {};
