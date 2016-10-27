@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "glob": "^7.1.1",
+    "keccakjs": "^0.2.1",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "nodegit": "^0.16.0",

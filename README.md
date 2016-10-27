@@ -7,17 +7,17 @@ Uses [gatsby](https://github.com/gatsbyjs/gatsby) to generate beautiful Solidity
 ## Features
 
 * Automatically document contracts and methods from your code
-* Generate static HTMl that can be served from github pages
-* Fully customisable output using ReactJS
-* Syntax highlighting
-* Slick, minimalist [semantic-ui](https://github.com/Semantic-Org/Semantic-UI-React) UX
+* Go Generate static HTMl documentation websites that can be served from github pages
+* Fully customizable output using React
+* Minimalist UX from [semantic-ui](https://github.com/Semantic-Org/Semantic-UI-React)
+* Solidity Syntax highlighting
 * For each contract, options for whitelisting
   * Methods Documentation
   * ABI
   * Bytecode
   * Source Code
 
-![Doxity Screenshot](http://i.imgur.com/9S6COQE.png)
+![Doxity Screenshot](http://i.imgur.com/4ojFGfs.png)
 
 ## Installation
 
@@ -131,10 +131,12 @@ You can then use `npm run docs:[command]` as a proxy for `doxity [command]`.
 ## TODO
 
 * 0.1.0
+  * AST parsing: render params that are in devdocs but not ABI (e.g. modifiers)
+  * Rename `compile` <-> `build`
   * Demo Site
 * 1.0.0
-  * AST parsing: render params that are in devdocs but not ABI (e.g. modifiers)
   * Sourcemaps, Hash Signatures
+  * Categorize Contracts
   * Tests
 * 1.x
   * Versioning
