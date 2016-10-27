@@ -10,15 +10,17 @@ import {
 } from './constants';
 
 import init from './init';
-import build from './build';
+import compile from './compile';
 import develop from './develop';
 import publish from './publish';
+import build from './build';
 
 const methods = {
-  build,
+  compile,
   init,
   develop,
   publish,
+  build,
 };
 
 function populateArguments(passed) {

@@ -19,15 +19,16 @@ export default function ({ target, src, dir, whitelist }) {
   // TODO implement sourcemaps
   // abi,asm,ast,bin,bin-runtime,clone-bin,devdoc,interface,opcodes,srcmap,srcmap-runtime,userdoc
   const exec = `solc --combined-json abi,asm,ast,bin,bin-runtime,clone-bin,devdoc,interface,opcodes,srcmap,srcmap-runtime,userdoc ${src}`;
-  const { sourceList, sources, contracts, version } = JSON.parse(childProcess.execSync(exec));
+  console.log(exec);
+  const { sourceList, contracts, version } = JSON.parse(childProcess.execSync(exec));
   // for each contract create a json file in the target directory
-  process.stdout.write(`Generating output for ${sourceList.length} files...`);
   // do we need to check for whitelist?
   let defaultWhitelist = { source: true, bytecode: true, abi: true, methods: true };
   if (whitelist && Object.keys(whitelist).length > 0) {
     defaultWhitelist = whitelist.all || {};
   }
-  Object.keys(contracts).forEach((contractName) => {
+  Object.keys(contracts).forEach((contractName, i) => {
+    process.stdout.write(`\rGenerating output for ${i + 1}/${sourceList.length} files...`);
     // determine whether we should be skipped
     const myWhitelist = { ...defaultWhitelist, ...(whitelist || {})[contractName] };
     // get the source file
@@ -88,6 +89,5 @@ export default function ({ target, src, dir, whitelist }) {
     /* do nothing */
     console.log('Error copying readme file', e);
   }
-
-  process.stdout.write('\rDocumentation data is created! Now use `doxity publish` or `doxity develop`\n');
+  process.stdout.write('  done!\n');
 }

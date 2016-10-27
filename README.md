@@ -36,13 +36,14 @@ npm install --save-dev @digix/doxity
 
 1. Have a project that contains natspecced* `.sol` contracts in a `contracts` directory.
 1. `doxity init` will clone and set up the boilerplate gatsby project - files found in `./scripts/doxity`
-1. `doxity build` will compile the contracts and get json meta data
-1. optional `doxity develop` will start a development server for editing gatsby project
-1. `doxity publish` will generate static HTML containing documentation to `./docs`
+1. `doxity build` will generate static HTML containing documentation to `./docs`
 
-**Publish it to github**
+**Customize Markup and Publish it to github**
 
+1. `doxity develop` will start a development server for editing gatsby project
+1. `doxity compile` will compile the contracts and update the contract data
 1. Ensure you have set `linkPrefix` in `scripts/doxity/config.toml` to be equal to your repo's name (e.g. `/my-project`)
+1. `doxity publish` will generate static HTML containing documentation to `./docs`
 1. After publishing, you'll end up with a `./docs` folder in your project which can be easily deployed
 1. Push it to `master` on github
 1. Go to your repo options, update 'Github Pages -> Set Source' to 'master branch /docs folder'
@@ -109,7 +110,7 @@ You can also override these options by passing them to a command tool.
 Unless you override them, default arguments will be used:
 
 - `doxity init  --target --source` (you can also pass any arguments to save them to `.doxityrc`)
-- `doxity build --target --src --dir`
+- `doxity compile --target --src --dir`
 - `doxity develop --target`
 - `doxity publish --target --out`
 
@@ -118,10 +119,10 @@ Unless you override them, default arguments will be used:
 ```javascript
 "scripts" : {
   "docs:init": "node_modules/.bin/doxity init", // add your custom arguments (see API below)
-  "docs:build": "node_modules/.bin/doxity build",
+  "docs:compile": "node_modules/.bin/doxity compile",
   "docs:develop": "node_modules/.bin/doxity develop",
   "docs:publish": "node_modules/.bin/doxity publish",
-  "docs:compile": "npm run docs:build; npm run docs:publish", // build + publish
+  "docs:build": "node_modules/.bin/doxity build", // compile + publish
   ...
 },
 ```
@@ -131,11 +132,13 @@ You can then use `npm run docs:[command]` as a proxy for `doxity [command]`.
 ## TODO
 
 * 0.1.0
-  * AST parsing: render params that are in devdocs but not ABI (e.g. modifiers)
-  * Rename `compile` <-> `build`
+  * Rename `compile` <-> `compile`
   * Demo Site
 * 1.0.0
-  * Sourcemaps, Hash Signatures
+  * AST parsing (pending solidity update)
+    * Modifiers, variables, private functions, etc.
+    * Sourcemaps
+    * Inline Code Snippets
   * Categorize Contracts
   * Tests
 * 1.x
