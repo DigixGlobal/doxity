@@ -33,7 +33,6 @@ npm install --save-dev @digix/doxity
 
 ## Usage
 
-<<<<<<< HEAD
 ### `.doxityrc`
 
 You can configure all of doxity's options using a `.doxityrc` file at the root of your project, with the following structure:
@@ -41,52 +40,47 @@ You can configure all of doxity's options using a `.doxityrc` file at the root o
 ```javascript
 // .doxityrc
 {
-  "target": "",
-  "out": "",
-  "dir": "",
-  "src": "",
+  // gatsby project source files directory
+	"target": "scripts/doxity",
+  // folder that contains the contracts you want to compile
+	"src": "contracts",
+  // folder in gatsby project to dump contract data
+	"dir": "pages/docs",
+  // folder to output the generated html (relative to project root)
+	"out": "docs",
+  // git url for bootstrapping the gatsby project
+  "source": "https://github.com/DigixGlobal/doxity-gatsby-starter-project.git",
   // blacklists and whitelists support globs for directory
-  "blacklist":  {
-    "test/*": true, // if set, doxity will ignroe these contract
-    "ACOwned": true, // if set, will ignore the contract
-    // hide source code but show API docs + Bytecode
-    "DigixMath": {
-      "source": true
-    }, // only show API docs
-    "DoublyLinkedList": {
-      "source": true,
-      "bytecode": true,
-    },
-  },
-  "whitelist": {
-    // only show this contract (see whitelist section below)
-    "ACOwned": true,
-    // only show this contract's source code
-    "DigixMath": {
-      "api": true,
-      "abi": true,
-    },
-    "DigixMath": {
-      "source" true,
-    },
-  },
+	"blacklist": {
+    // if set, doxity will ignroe these contracts
+		"test\/*": true,
+    // hide source code but show API docs, ABI + Bytecode    
+		"DigixMath": {
+			"source": true
+		},
+    // only show API docs + ABI    
+		"DoublyLinkedList": {
+			"source": true,
+			"bytecode": true
+		}
+	},
+  // only show these contracts  
+	"whitelist": {
+    // show all contract attributes    
+		"ACOwned": true,
+    // show all attributes apart from source code    
+		"DigixMath": {
+			"api": true,
+			"abi": true,
+			"btyecode": true
+		},
+    // only show this contract's source code    
+		"SomeOtherLib": {
+			"source": true
+		}
+	}
 }
 ```
-
-## Options
-
-| Parameter | Default Value | Description |
-|---|---|---|
-|`source`|[doxity-gatsby](https://github.com/DigixGlobal/doxity-gatsby-starter-project.git)|git url for bootstrapping the gatsby project|
-|`target`|`./scripts/doxity`|gatsby project source files directory
-|`src`|`contracts`|folder that contains the contracts you want to compile|
-|`dir`|`pages/docs`|folder in gatsby project to dump generated docs data|
-|`out`|`docs`|folder to output the generated html (relative to project root)|
-
-## Whitelist & Blacklist
-
-You can specify
-
 
 ### Command Line Interface
 
@@ -94,7 +88,7 @@ You can also override these options by passing them to a command tool.
 
 Unless you override them, default arguments will be used:
 
-- `doxity init  --target --source`
+- `doxity init  --target --source` (you can also pass any arguments to save them to `.doxityrc`)
 - `doxity build --target --src --dir`
 - `doxity develop --target`
 - `doxity publish --target --out`
@@ -118,9 +112,10 @@ You can then use `npm run docs:[command]` as a proxy for `doxity [command]`.
 
 * 0.1.0
   * Options to hide / whitelist source files & binaries
-  * Render params if they are in userdocs but not ABI
+  * Code highlighting
   * Demo Site
 * 1.0.0
+  * AST parsing: render params that are in devdocs but not ABI (e.g. methods)
   * Tests
   * Sourcemaps, Hash Signatures
 * 1.x

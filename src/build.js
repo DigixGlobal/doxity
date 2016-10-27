@@ -4,15 +4,14 @@ import glob from 'glob';
 import toml from 'toml';
 import tomlify from 'tomlify-j0.4';
 
-import { DEFAULT_SRC_DIR, DEFAULT_TARGET, DEFAULT_PAGES_DIR, CONFIG_FILE, README_FILE, README_TARGET } from './constants';
+import { CONFIG_FILE, README_FILE, README_TARGET } from './constants';
 
 function getDocs(name, doc) {
   // TODO add docs anyway if they are not found... ? E.G. for methods
   return doc.methods[Object.keys(doc.methods).find(signature => name === signature.split('(')[0])];
 }
 
-export default function ({ target = DEFAULT_TARGET, src = DEFAULT_SRC_DIR, dir = DEFAULT_PAGES_DIR }) {
-  // TODO configurable input
+export default function ({ target, src, dir }) {
   const output = `${process.env.PWD}/${target}/${dir}`;
   if (!fs.existsSync(output)) { throw new Error(`Output directory ${output} not found, are you in the right directory?`); }
   // clear out the output folder (remove all json files)
@@ -88,7 +87,6 @@ export default function ({ target = DEFAULT_TARGET, src = DEFAULT_SRC_DIR, dir =
   });
 
   const configFile = `${process.env.PWD}/${target}/${CONFIG_FILE}`;
-
   // todo inherit from .doxityrc
   let config = {
     compiler: compiler.version,
@@ -100,26 +98,21 @@ export default function ({ target = DEFAULT_TARGET, src = DEFAULT_SRC_DIR, dir =
     author: pkgConfig.author,
     buildTime: new Date(),
   };
-
   try { // try marginging with old config
-    config = { ...toml.parse(fs.readFileSync(`${process.env.PWD}/${target}/${CONFIG_FILE}`)), ...config };
+    config = { ...toml.parse(fs.readFileSync(`${process.env.PWD}/${target}/${CONFIG_FILE}`).toString()), ...config };
   } catch (e) {
     /* do nothing */
     console.log('Error copying config', e);
   }
-
+  // write the config
+  if (fs.existsSync(configFile)) { fs.unlinkSync(configFile); }
   fs.writeFileSync(configFile, `${tomlify(config)}`);
 
   // copy the readme
   try {
     const readmeFile = glob.sync(`${process.env.PWD}/${README_FILE}`, { nocase: true })[0];
-    console.log("found readme", readmeFile);
     const readmeTarget = `${process.env.PWD}/${target}/${README_TARGET}`;
-    console.log('target is', readmeTarget);
-    if (fs.existsSync(readmeTarget)) {
-      console.log('removing', readmeTarget);
-      fs.unlinkSync(readmeTarget);
-    }
+    if (fs.existsSync(readmeTarget)) { fs.unlinkSync(readmeTarget); }
     fs.writeFileSync(readmeTarget, fs.readFileSync(readmeFile));
   } catch (e) {
     /* do nothing */

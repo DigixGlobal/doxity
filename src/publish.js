@@ -1,10 +1,9 @@
 import fs from 'fs';
 import childProcess from 'child_process';
 
-import { DEFAULT_TARGET, DEFAULT_PUBLISH_DIR } from './constants';
 import { clearDirectory } from './helpers';
 
-export default function ({ target = DEFAULT_TARGET, out = DEFAULT_PUBLISH_DIR } = {}) {
+export default function ({ target, out }) {
   // TODO check folder exists...
   const cwd = `${process.env.PWD}/${target}`;
   const outputFolder = `${cwd}/public`;

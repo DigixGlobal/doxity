@@ -1,10 +1,13 @@
+import fs from 'fs';
 import Git from 'nodegit';
 import childProcess from 'child_process';
 
-import { DEFAULT_SOURCE, DEFAULT_TARGET } from './constants';
 import { clearDirectory } from './helpers';
 
-export default function ({ source = DEFAULT_SOURCE, target = DEFAULT_TARGET } = {}) {
+import { DOXITYRC_FILE } from './constants';
+
+export default function (args) {
+  const { source, target } = args;
   // TODO check folder exists...
   const absoluteTarget = `${process.env.PWD}/${target}`;
   // clear the target dir
@@ -26,6 +29,11 @@ export default function ({ source = DEFAULT_SOURCE, target = DEFAULT_TARGET } = 
     npmInstall.stdout.pipe(process.stdout);
     npmInstall.stderr.pipe(process.stderr);
     npmInstall.on('close', () => {
+      const doxityrcFile = `${process.env.PWD}/${DOXITYRC_FILE}`;
+      // overwrite doxityrc file
+      if (fs.existsSync(doxityrcFile)) { fs.unlinkSync(doxityrcFile); }
+      fs.writeFileSync(doxityrcFile, `${JSON.stringify(args, null, 2)}\n`);
+
       process.stdout.write('Doxity is initialized! Now run `doxity build`\n');
       process.exit();
     });
