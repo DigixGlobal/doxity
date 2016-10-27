@@ -3,7 +3,7 @@ import { getFunctionSignature } from '../helpers';
 export default function (contract) {
   return JSON.parse(contract.abi).map((method) => {
     // get find relevent docs
-    const signature = `${method.name || ''}(${method.inputs.map(i => i.type).join(',')})`;
+    const signature = method.name && `${method.name}(${method.inputs.map(i => i.type).join(',')})`;
     const devDocs = ((JSON.parse(contract.devdoc) || {}).methods || {})[signature] || {};
     const userDocs = ((JSON.parse(contract.userdoc) || {}).methods || {})[signature] || {};
     // map abi inputs to devdoc inputs
@@ -32,7 +32,7 @@ export default function (contract) {
       inputs,
       outputs,
       signature,
-      signatureHash: getFunctionSignature(signature),
+      signatureHash: signature && getFunctionSignature(signature),
     };
   });
 }
