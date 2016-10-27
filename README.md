@@ -50,35 +50,19 @@ You can configure all of doxity's options using a `.doxityrc` file at the root o
 	"out": "docs",
   // git url for bootstrapping the gatsby project
   "source": "https://github.com/DigixGlobal/doxity-gatsby-starter-project.git",
-  // blacklists and whitelists support globs for directory
-	"blacklist": {
-    // if set, doxity will ignroe these contracts
-		"test\/*": true,
-    // hide source code but show API docs, ABI + Bytecode    
-		"DigixMath": {
-			"source": true
-		},
-    // only show API docs + ABI    
-		"DoublyLinkedList": {
-			"source": true,
-			"bytecode": true
-		}
-	},
-  // only show these contracts  
-	"whitelist": {
-    // show all contract attributes    
-		"ACOwned": true,
-    // show all attributes apart from source code    
-		"DigixMath": {
-			"api": true,
-			"abi": true,
-			"btyecode": true
-		},
-    // only show this contract's source code    
-		"SomeOtherLib": {
-			"source": true
-		}
-	}
+  // option to whitelist various data
+  "whitelist": {
+    // the keyname `all` will be used for whitelist defaults
+    "all": {
+      "abi": true,
+      "methods": true,
+      "bytecode": false, // bytecode is false or undefined, it won't be shown
+      "source": false // source is false or undefined, won't be shown
+    },
+    "DigixMath": {
+      "source": true // source code uniquely shown for this contract, bytecode still hidden
+    }
+  }
 }
 ```
 
