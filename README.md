@@ -9,7 +9,7 @@ Uses [gatsby](https://github.com/gatsbyjs/gatsby) to generate beautiful Solidity
 ## Features
 
 * Automatically document contracts and methods from your code
-* Go Generate static HTMl documentation websites that can be served from github pages
+* Generate static HTML documentation websites that can be served directly from github
 * Fully customizable output using React
 * Minimalist UX from [semantic-ui](https://github.com/Semantic-Org/Semantic-UI-React)
 * Solidity Syntax highlighting
@@ -82,7 +82,7 @@ You can configure all of doxity's options using a `.doxityrc` file at the root o
   // gatsby project source files directory
 	"target": "scripts/doxity",
   // folder that contains the contracts you want to compile
-	"src": "contracts",
+	"src": "contracts/*",
   // folder in gatsby project to dump contract data
 	"dir": "pages/docs",
   // folder to output the generated html (relative to project root)
@@ -111,7 +111,7 @@ You can also override these options by passing them to a command tool.
 
 Unless you override them, default arguments will be used:
 
-- `doxity init  --target --source` (you can also pass any arguments to save them to `.doxityrc`)
+- `doxity init  --target --source` (with init, you can also pass any arguments to save them to `.doxityrc`)
 - `doxity compile --target --src --dir`
 - `doxity develop --target`
 - `doxity publish --target --out`
@@ -133,18 +133,18 @@ You can then use `npm run docs:[command]` as a proxy for `doxity [command]`.
 
 ## TODO
 
-* 0.1.0
-  * Rename `compile` <-> `compile`
-  * Demo Site
 * 1.0.0
   * AST parsing (pending solidity update)
+    * pragma version
+    * Imports
     * Modifiers, variables, private functions, etc.
     * Sourcemaps
     * Inline Code Snippets
-  * Categorize Contracts
+  * Tree view
+  * Methods filtering
   * Tests
 * 1.x
-  * Versioning
+  * Multiple Versioning
   * Pudding integration? Automatically generate forms + web3 instance for testing via GUI?
 
 ## License
