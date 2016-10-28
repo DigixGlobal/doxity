@@ -34,7 +34,7 @@ export default function (args) {
       if (fs.existsSync(doxityrcFile)) { fs.unlinkSync(doxityrcFile); }
       fs.writeFileSync(doxityrcFile, `${JSON.stringify(args, null, 2)}\n`);
 
-      process.stdout.write('Doxity is initialized! Now run `doxity compile`\n');
+      process.stdout.write('Doxity is initialized! Now run `doxity build`\n');
       process.exit();
     });
   });

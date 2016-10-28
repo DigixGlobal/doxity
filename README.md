@@ -34,7 +34,7 @@ npm install --save-dev @digix/doxity
 
 ## Quickstart
 
-1. Have a project that contains natspecced* `.sol` contracts in a `contracts` directory.
+1. Have a project that contains natspecced* `.sol` contracts in a `contracts` directory, a `package.json` and `README.md`.
 1. `doxity init` will clone and set up the boilerplate gatsby project - files found in `./scripts/doxity`
 1. `doxity build` will generate static HTML containing documentation to `./docs`
 
