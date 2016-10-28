@@ -2,6 +2,8 @@
 
 ### Documentation Generator for Solidity
 
+[Demo Site](https://hitchcott.github.io/doxity-demo/docs/MetaCoin/)
+
 Uses [gatsby](https://github.com/gatsbyjs/gatsby) to generate beautiful Solidity docs automatically via [natspec](https://github.com/ethereum/wiki/wiki/Ethereum-Natural-Specification-Format).
 
 ## Features
