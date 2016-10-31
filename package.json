@@ -1,6 +1,6 @@
 {
   "name": "@digix/doxity",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Documentation Generator for Solidity Contracts",
   "main": "lib/index.js",
   "scripts": {
@@ -38,6 +38,7 @@
     "mkdirp": "^0.5.1",
     "nodegit": "^0.16.0",
     "rimraf": "^2.5.4",
+    "toml": "^2.3.0",
     "tomlify-j0.4": "^1.0.1"
   }
 }
