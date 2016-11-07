@@ -68,7 +68,7 @@ export default function ({ target, src, dir, whitelist }) {
     version: pkgConfig.version,
     description: pkgConfig.description,
     homepage: pkgConfig.homepage,
-    author: pkgConfig.author,
+    author: pkgConfig.author.name || pkgConfig.author,
     buildTime: new Date(),
   };
   try { // try marginging with old config
