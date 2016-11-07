@@ -20,37 +20,39 @@ export default function ({ target, src, dir, whitelist }) {
   // abi,asm,ast,bin,bin-runtime,clone-bin,devdoc,interface,opcodes,srcmap,srcmap-runtime,userdoc
   const exec = `solc --combined-json abi,asm,ast,bin,bin-runtime,clone-bin,devdoc,interface,opcodes,srcmap,srcmap-runtime,userdoc ${src}`;
   console.log(exec);
-  const { sourceList, contracts, version } = JSON.parse(childProcess.execSync(exec));
+  const { sources, contracts, version } = JSON.parse(childProcess.execSync(exec));
   // for each contract create a json file in the target directory
   // do we need to check for whitelist?
   let defaultWhitelist = { source: true, bytecode: true, abi: true, methods: true };
   if (whitelist && Object.keys(whitelist).length > 0) {
     defaultWhitelist = whitelist.all || {};
   }
-  Object.keys(contracts).forEach((contractName, i) => {
-    process.stdout.write(`\rGenerating output for ${i + 1}/${sourceList.length} files...`);
+  process.stdout.write(`Generating output for ${Object.keys(sources).length} files...\n`);
+  Object.keys(contracts).forEach((contractName) => {
     // determine whether we should be skipped
     const myWhitelist = { ...defaultWhitelist, ...(whitelist || {})[contractName] };
     // get the source file
-    const sourceFile = sourceList.find((fileName) => {
-      const split = fileName.split('/');
-      return `${contractName}.sol` === split[split.length - 1];
+    const fileName = Object.keys(sources).find((name) => {
+      const contractDefinition = sources[name].AST.children.find(c => c.name === 'ContractDefinition');
+      return contractDefinition.attributes.name === contractName;
     });
+    if (!fileName) {
+      process.stdout.write(`Could not find source code for: ${contractName}, skipping\n`);
+      return null;
+    }
     const contract = contracts[contractName];
-    const { bin, opcodes, abi, devdoc, userdoc } = contract;
+    const { bin, opcodes, abi, devdoc } = contract;
     const { author, title } = JSON.parse(devdoc);
     const data = {
-      ...devdoc,
-      ...userdoc,
       author,
       title,
+      fileName,
       name: contractName,
-      fileName: sourceFile,
       // only pass these if they are whitelisted
       abi: myWhitelist.abi && JSON.parse(abi),
       bin: myWhitelist.bytecode && bin,
       opcodes: myWhitelist.bytecode && opcodes,
-      source: myWhitelist.source && fs.readFileSync(`${process.env.PWD}/${sourceFile}`).toString(),
+      source: myWhitelist.source && fs.readFileSync(`${process.env.PWD}/${fileName}`).toString(),
       abiDocs: myWhitelist.methods && parseAbi(contract),
     };
     delete data.methods;
