@@ -25,7 +25,7 @@ Uses [gatsby](https://github.com/gatsbyjs/gatsby) to generate beautiful Solidity
 
 You can install `@digix/doxity` globally or locally in your project.
 
-You'll also need solc `0.4.X` installed on your machine.
+You'll also need solc `0.4.X` and libssl-dev installed on your machine.
 
 ```bash
 # globally
