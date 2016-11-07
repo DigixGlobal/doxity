@@ -25,12 +25,12 @@ Uses [gatsby](https://github.com/gatsbyjs/gatsby) to generate beautiful Solidity
 
 You can install `@digix/doxity` globally or locally in your project.
 
-You'll also need solc `0.4.X` and libssl-dev installed on your machine.
+You'll also need `solc 0.4.X` ([native](http://solidity.readthedocs.io/en/develop/installing-solidity.html#binary-packages) until [solc-js is supported](https://github.com/ethereum/solc-js/issues/70)) and libssl-dev installed on your machine.
 
 ```bash
 # globally
 npm install -g @digix/doxity
-# project folder
+# or within project folder
 npm install --save-dev @digix/doxity
 ```
 
@@ -115,6 +115,8 @@ Unless you override them, default arguments will be used:
 - `doxity compile --target --src --dir`
 - `doxity develop --target`
 - `doxity publish --target --out`
+
+When passing to `src` in the CLI, wrap the filename in quotes; e.g. `--src "contracts/*"` - it is passed directly to `solc`.
 
 **Protip:** If you are installing locally, you could add the following to your `package.json`:
 
