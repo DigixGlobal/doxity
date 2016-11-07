@@ -6,6 +6,8 @@
 
 Uses [gatsby](https://github.com/gatsbyjs/gatsby) to generate beautiful Solidity docs automatically via [natspec](https://github.com/ethereum/wiki/wiki/Ethereum-Natural-Specification-Format).
 
+⚠️  Consider API to be unstable until [solidity/1141](https://github.com/ethereum/solidity/issues/1141) is addressed.
+
 ## Features
 
 * Automatically document contracts and methods from your code
