@@ -14,7 +14,7 @@ export default function ({ target, out }) {
     runDev.stderr.pipe(process.stderr);
     runDev.on('close', () => {
       fs.renameSync(outputFolder, destFolder);
-      process.stdout.write(`Published Documentaiton to ${destFolder}\n`);
+      process.stdout.write(`Published Documentation to ${destFolder}\n`);
       process.exit();
     });
   });
