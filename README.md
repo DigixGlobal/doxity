@@ -89,10 +89,10 @@ You can configure all of doxity's options using a `.doxityrc` file at the root o
 	"dir": "pages/docs",
   // folder to output the generated html (relative to project root)
 	"out": "docs",
-  // git url for bootstrapping the gatsby project
-  "source": "https://github.com/DigixGlobal/doxity-gatsby-starter-project.git",
+  // tarball for bootstrapping the gatsby project
+  "source": "https://github.com/DigixGlobal/doxity-gatsby-starter-project/archive/9445d59056058159ce25d7cd1643039523718553.tar.gz",
   // for truffle projects, you can get deployed contract info
-  // use https://github.com/DigixGlobal/doxity-gatsby-starter-project.git#web3 for interactive mode!
+  // use https://github.com/DigixGlobal/doxity-gatsby-starter-project/archive/74df3b2b7a2484714540e4a9153a8f1d0f95a380.tar.gz for experimental interactive mode!
   "interaction": {
     "network": "2",
     "providerUrl": "https://morden.infura.io/sign_up_to_get_a_hash"

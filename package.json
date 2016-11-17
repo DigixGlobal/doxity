@@ -1,12 +1,12 @@
 {
   "name": "@digix/doxity",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Documentation Generator for Solidity Contracts",
   "main": "lib/index.js",
   "scripts": {
     "dev": "./node_modules/.bin/mocha --watch --compilers js:babel-register",
     "test": "./node_modules/.bin/mocha --compilers js:babel-register",
-    "compile": "rm -rf lib/* && ./node_modules/.bin/babel src -d lib",
+    "compile": "rm -rf lib/* && ./node_modules/.bin/babel src -d lib && chmod +x ./lib/bin/doxity.js",
     "prepublish": "npm run compile"
   },
   "bin": {
@@ -28,16 +28,15 @@
     "eslint-config-airbnb": "^12.0.0",
     "eslint-plugin-import": "^1.16.0",
     "eslint-plugin-jsx-a11y": "^2.2.3",
-    "eslint-plugin-react": "^6.4.1",
-    "nodegit": "^0.16.0"
+    "eslint-plugin-react": "^6.4.1"
   },
   "dependencies": {
     "glob": "^7.1.1",
     "keccakjs": "^0.2.1",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
-    "nodegit": "^0.16.0",
     "rimraf": "^2.5.4",
+    "tar.gz": "^1.0.5",
     "toml": "^2.3.0",
     "tomlify-j0.4": "^1.0.1"
   }
