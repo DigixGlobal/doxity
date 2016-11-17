@@ -38,7 +38,9 @@ function populateArguments(passed) {
   let saved = {};
   try {
     saved = JSON.parse(fs.readFileSync(`${process.env.PWD}/${DOXITYRC_FILE}`).toString());
-  } catch (e) { /* do nothing */ }
+  } catch (e) {
+    console.log('.doxityrc not found or unreadable');
+  }
   // return merge
   return { ...defaults, ...saved, ...passed };
 }

@@ -1,14 +1,16 @@
+/* eslint-disable global-require */
+
 import fs from 'fs';
 import childProcess from 'child_process';
 import glob from 'glob';
 import toml from 'toml';
 import tomlify from 'tomlify-j0.4';
 
-import { CONFIG_FILE, README_FILE, README_TARGET } from '../constants';
+import { CONFIG_FILE, README_FILE, README_TARGET, DOXITYRC_FILE } from '../constants';
 
 import parseAbi from './parse-abi';
 
-export default function ({ target, src, dir, whitelist }) {
+export default function ({ target, src, dir, whitelist, interaction }) {
   const output = `${process.env.PWD}/${target}/${dir}`;
   if (!fs.existsSync(output)) { throw new Error(`Output directory ${output} not found, are you in the right directory?`); }
   // clear out the output folder (remove all json files)
@@ -19,7 +21,7 @@ export default function ({ target, src, dir, whitelist }) {
   // TODO implement sourcemaps
   // abi,asm,ast,bin,bin-runtime,clone-bin,devdoc,interface,opcodes,srcmap,srcmap-runtime,userdoc
   const exec = `solc --combined-json abi,asm,ast,bin,bin-runtime,clone-bin,devdoc,interface,opcodes,srcmap,srcmap-runtime,userdoc ${src}`;
-  console.log(exec);
+  process.stdout.write(`${exec}\n`);
   const { sources, contracts, version } = JSON.parse(childProcess.execSync(exec));
   // for each contract create a json file in the target directory
   // do we need to check for whitelist?
@@ -40,6 +42,14 @@ export default function ({ target, src, dir, whitelist }) {
       process.stdout.write(`Could not find source code for: ${contractName}, skipping\n`);
       return null;
     }
+    // get deploy info from truffle
+    let address;
+    if (interaction) {
+      try {
+        const instance = require(`${process.env.PWD}/build/contracts/${contractName}.sol.js`);
+        address = instance.all_networks[interaction.network].address;
+      } catch (e) { /* do noithing */ }
+    }
     const contract = contracts[contractName];
     const { bin, opcodes, abi, devdoc } = contract;
     const { author, title } = JSON.parse(devdoc);
@@ -47,6 +57,7 @@ export default function ({ target, src, dir, whitelist }) {
       author,
       title,
       fileName,
+      address,
       name: contractName,
       // only pass these if they are whitelisted
       abi: myWhitelist.abi && JSON.parse(abi),
@@ -56,11 +67,9 @@ export default function ({ target, src, dir, whitelist }) {
       abiDocs: myWhitelist.methods && parseAbi(contract),
     };
     delete data.methods;
-    fs.writeFileSync(`${output}/${contractName}.json`, `${JSON.stringify(data)}\n`);
+    return fs.writeFileSync(`${output}/${contractName}.json`, `${JSON.stringify(data)}\n`);
   });
 
-  const configFile = `${process.env.PWD}/${target}/${CONFIG_FILE}`;
-  // todo inherit from .doxityrc
   let config = {
     compiler: version,
     name: pkgConfig.name,
@@ -71,12 +80,20 @@ export default function ({ target, src, dir, whitelist }) {
     author: pkgConfig.author.name || pkgConfig.author,
     buildTime: new Date(),
   };
+
+  const configFile = `${process.env.PWD}/${target}/${CONFIG_FILE}`;
+
   try { // try marginging with old config
-    config = { ...toml.parse(fs.readFileSync(`${process.env.PWD}/${target}/${CONFIG_FILE}`).toString()), ...config };
+    config = { ...toml.parse(fs.readFileSync(configFile).toString()), ...config };
   } catch (e) {
     /* do nothing */
     console.log('Error copying config', e);
   }
+
+  try { // try marginging with doxity config
+    config = { ...config, ...JSON.parse(fs.readFileSync(`${process.env.PWD}/${DOXITYRC_FILE}`).toString()) };
+  } catch (e) { /* do nothing */ }
+
   // write the config
   if (fs.existsSync(configFile)) { fs.unlinkSync(configFile); }
   fs.writeFileSync(configFile, `${tomlify(config)}`);
