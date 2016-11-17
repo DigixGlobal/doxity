@@ -91,6 +91,12 @@ You can configure all of doxity's options using a `.doxityrc` file at the root o
 	"out": "docs",
   // git url for bootstrapping the gatsby project
   "source": "https://github.com/DigixGlobal/doxity-gatsby-starter-project.git",
+  // for truffle projects, you can get deployed contract info
+  // use https://github.com/DigixGlobal/doxity-gatsby-starter-project.git#web3 for interactive mode!
+  "interaction": {
+    "network": "2",
+    "providerUrl": "https://morden.infura.io/sign_up_to_get_a_hash"
+  }
   // option to whitelist various data
   "whitelist": {
     // the keyname `all` will be used for whitelist defaults
