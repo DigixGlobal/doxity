@@ -6,6 +6,8 @@
 
 Uses [gatsby](https://github.com/gatsbyjs/gatsby) to generate beautiful Solidity docs automatically via [natspec](https://github.com/ethereum/wiki/wiki/Ethereum-Natural-Specification-Format).
 
+⚠️  Consider Doxity to be "out of action" for the time being until further notice, as it does not support Truffle imports. It should work with basic contracts, but requires a (fairly) large update until the next release that will resolve the remaining issues.
+
 ⚠️  Consider API to be unstable until [solidity/1141](https://github.com/ethereum/solidity/issues/1141) is addressed.
 
 ## Features
