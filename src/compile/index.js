@@ -1,74 +1,63 @@
 /* eslint-disable global-require */
 
 import fs from 'fs';
-import childProcess from 'child_process';
 import glob from 'glob';
 import toml from 'toml';
 import tomlify from 'tomlify-j0.4';
 
 import { CONFIG_FILE, README_FILE, README_TARGET, DOXITYRC_FILE } from '../constants';
 
+import solc from './solc';
 import parseAbi from './parse-abi';
 
-export default function ({ target, src, dir, whitelist, interaction }) {
-  const output = `${process.env.PWD}/${target}/${dir}`;
-  if (!fs.existsSync(output)) { throw new Error(`Output directory ${output} not found, are you in the right directory?`); }
-  // clear out the output folder (remove all json files)
-  glob.sync(`${output}/*.json`).forEach(file => fs.unlinkSync(file));
-  // TODO find in a better way?
-  const pkgJson = fs.readFileSync(`${process.env.PWD}/package.json`);
-  const pkgConfig = pkgJson ? JSON.parse(pkgJson) : {};
-  // TODO implement sourcemaps
-  // abi,asm,ast,bin,bin-runtime,clone-bin,devdoc,interface,opcodes,srcmap,srcmap-runtime,userdoc
-  const exec = `solc --combined-json abi,asm,ast,bin,bin-runtime,clone-bin,devdoc,interface,opcodes,srcmap,srcmap-runtime,userdoc ${src}`;
-  process.stdout.write(`${exec}\n`);
-  const { sources, contracts, version } = JSON.parse(childProcess.execSync(exec));
-  // for each contract create a json file in the target directory
+function compile({ whitelist, contracts, output, target, version }) {
   // do we need to check for whitelist?
   let defaultWhitelist = { source: true, bytecode: true, abi: true, methods: true };
   if (whitelist && Object.keys(whitelist).length > 0) {
     defaultWhitelist = whitelist.all || {};
   }
-  process.stdout.write(`Generating output for ${Object.keys(sources).length} files...\n`);
+  process.stdout.write(`Generating output for ${Object.keys(contracts).length} contracts...\n`);
   Object.keys(contracts).forEach((contractName) => {
+    const contract = contracts[contractName];
     // determine whether we should be skipped
     const myWhitelist = { ...defaultWhitelist, ...(whitelist || {})[contractName] };
     // get the source file
-    const fileName = Object.keys(sources).find((name) => {
-      const contractDefinition = sources[name].AST.children.find(c => c.name === 'ContractDefinition');
-      return contractDefinition.attributes.name === contractName;
-    });
-    if (!fileName) {
-      process.stdout.write(`Could not find source code for: ${contractName}, skipping\n`);
-      return null;
-    }
+    const { fileName } = contract;
+    // TODO fix me
+    // const interaction = {};
     // get deploy info from truffle
-    let address;
-    if (interaction) {
-      try {
-        const instance = require(`${process.env.PWD}/build/contracts/${contractName}.sol.js`);
-        address = instance.all_networks[interaction.network].address;
-      } catch (e) { /* do noithing */ }
-    }
-    const contract = contracts[contractName];
+    // let address;
+    // if (interaction) {
+    //   try {
+    //     const instance = require(`${process.env.PWD}/build/contracts/${contractName}.sol.js`);
+    //     address = instance.all_networks[interaction.network].address;
+    //   } catch (e) { /* do noithing */ }
+    // }
     const { bin, opcodes, abi, devdoc } = contract;
-    const { author, title } = JSON.parse(devdoc);
+    const { author, title } = devdoc;
     const data = {
       author,
       title,
-      fileName,
-      address,
+      fileName: fileName.replace(process.env.PWD, ''),
+      // address,
       name: contractName,
       // only pass these if they are whitelisted
-      abi: myWhitelist.abi && JSON.parse(abi),
+      abi: myWhitelist.abi && abi,
       bin: myWhitelist.bytecode && bin,
       opcodes: myWhitelist.bytecode && opcodes,
-      source: myWhitelist.source && fs.readFileSync(`${process.env.PWD}/${fileName}`).toString(),
+      source: myWhitelist.source && fs.readFileSync(fileName).toString(),
       abiDocs: myWhitelist.methods && parseAbi(contract),
     };
-    delete data.methods;
     return fs.writeFileSync(`${output}/${contractName}.json`, `${JSON.stringify(data)}\n`);
   });
+
+  // TODO find in a better way?
+  let pkgConfig = {};
+  try {
+    pkgConfig = JSON.parse(fs.readFileSync(`${process.env.PWD}/package.json`));
+  } catch (e) {
+    // console.log('package.json not found, add one for more output');
+  }
 
   let config = {
     compiler: version,
@@ -77,7 +66,8 @@ export default function ({ target, src, dir, whitelist, interaction }) {
     version: pkgConfig.version,
     description: pkgConfig.description,
     homepage: pkgConfig.homepage,
-    author: pkgConfig.author.name || pkgConfig.author,
+    interaction: {}, // TODO implement
+    author: (pkgConfig.author && pkgConfig.author.name) || pkgConfig.author,
     buildTime: new Date(),
   };
 
@@ -87,7 +77,7 @@ export default function ({ target, src, dir, whitelist, interaction }) {
     config = { ...toml.parse(fs.readFileSync(configFile).toString()), ...config };
   } catch (e) {
     /* do nothing */
-    console.log('Error copying config', e);
+    // console.log('Error copying config');
   }
 
   try { // try marginging with doxity config
@@ -106,7 +96,18 @@ export default function ({ target, src, dir, whitelist, interaction }) {
     fs.writeFileSync(readmeTarget, fs.readFileSync(readmeFile));
   } catch (e) {
     /* do nothing */
-    console.log('Error copying readme file', e);
+    // console.log('Readme file not found, ignoring...');
   }
   process.stdout.write('  done!\n');
+}
+
+export default function (opts) {
+  const output = `${process.env.PWD}/${opts.target}/${opts.dir}`;
+  if (!fs.existsSync(output)) { throw new Error(`Output directory ${output} not found, are you in the right directory?`); }
+  // clear out the output folder (remove all json files)
+  glob.sync(`${output}/*.json`).forEach(file => fs.unlinkSync(file));
+  // get the natspec
+  return solc(opts.src).then(({ contracts }) => {
+    compile({ ...opts, output, contracts });
+  });
 }

@@ -1,12 +1,12 @@
 import { getFunctionSignature } from '../helpers';
 
 export default function (contract) {
-  return JSON.parse(contract.abi).map((method) => {
+  return contract.abi.map((method) => {
     // get find relevent docs
     const inputParams = method.inputs || [];
     const signature = method.name && `${method.name}(${inputParams.map(i => i.type).join(',')})`;
-    const devDocs = ((JSON.parse(contract.devdoc) || {}).methods || {})[signature] || {};
-    const userDocs = ((JSON.parse(contract.userdoc) || {}).methods || {})[signature] || {};
+    const devDocs = (contract.devdoc.methods || {})[signature] || {};
+    const userDocs = (contract.userdoc.methods || {})[signature] || {};
     // map abi inputs to devdoc inputs
     const params = devDocs.params || {};
     const inputs = inputParams.map(param => ({ ...param, description: params[param.name] }));

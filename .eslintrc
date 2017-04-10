@@ -1,14 +1,7 @@
-extends:
-  eslint-config-airbnb
-
-settings:
-  ecmascript: 6
+extends: "eslint-config-airbnb"
+parser: "babel-eslint"
 
 rules:
   arrow-body-style: 0
   max-len: 0
   no-underscore-dangle: 0
-
-parserOptions:
-  ecmaFeatures:
-    experimentalObjectRestSpread: true
