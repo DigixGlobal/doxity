@@ -1,6 +1,6 @@
 # Doxity
 
-0.4.0 now works with truffle! 🏫
+0.4.0 now works with truffle! 💻
 
 ### Documentation Generator for Solidity
 
