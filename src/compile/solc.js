@@ -11,6 +11,7 @@ export default function (src) {
       const config = Config.default();
       config.resolver = new Resolver(config);
       compile.all(config, (err, res) => {
+        if (err) { throw err; }
         resolve({
           contracts: Object.keys(res).reduce((o, k) => {
             const { metadata, ...rest } = res[k];
