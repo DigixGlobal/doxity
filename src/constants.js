@@ -1,4 +1,4 @@
-export const DEFAULT_SOURCE = 'https://github.com/DigixGlobal/doxity-gatsby-starter-project/archive/2efeffdb0a34a97f9adc7b3e4f98a11e11120a98.tar.gz';
+export const DEFAULT_SOURCE = 'https://github.com/DigixGlobal/doxity-gatsby-starter-project/archive/a4886b7a7a04c018ac04fed3125d7d4785e74bed.tar.gz';
 export const DOXITYRC_FILE = '.doxityrc';
 export const DEFAULT_TARGET = 'scripts/doxity';
 export const DEFAULT_PAGES_DIR = 'pages/docs';
