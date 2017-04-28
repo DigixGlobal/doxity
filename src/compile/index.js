@@ -12,14 +12,16 @@ import parseAbi from './parse-abi';
 
 function compile({ whitelist, contracts, output, target, version }) {
   // do we need to check for whitelist?
-  let defaultWhitelist = { source: true, bytecode: true, abi: true, methods: true };
-  if (whitelist && Object.keys(whitelist).length > 0) {
-    defaultWhitelist = whitelist.all || {};
-  }
+  const defaultWhitelist = { source: true, bytecode: true, abi: true, methods: true };
+  // if (whitelist && Object.keys(whitelist).length > 0) {
+  //   defaultWhitelist = whitelist.all || {};
+  // }
   process.stdout.write(`Generating output for ${Object.keys(contracts).length} contracts...\n`);
   Object.keys(contracts).forEach((contractName) => {
     const contract = contracts[contractName];
     // determine whether we should be skipped
+    if (whitelist && !whitelist[contractName]) { return null; }
+    // otherwise, pick up the defaultss
     const myWhitelist = { ...defaultWhitelist, ...(whitelist || {})[contractName] };
     // get the source file
     const { fileName } = contract;
