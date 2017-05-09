@@ -10,11 +10,12 @@ export default function (src) {
     if (fs.existsSync(`${process.env.PWD}/truffle.js`)) {
       const config = Config.default();
       config.resolver = new Resolver(config);
+      config.rawData = true;
       compile.all(config, (err, res) => {
         if (err) { throw err; }
         resolve({
           contracts: Object.keys(res).reduce((o, k) => {
-            const { metadata, ...rest } = res[k];
+            const { metadata, ...rest } = res[k].rawData;
             const { output, settings } = JSON.parse(metadata);
             const fN = Object.keys(settings.compilationTarget)[0];
             const fileName = fN.indexOf(process.env.PWD) === 0 ? fN : `${process.env.PWD}/node_modules/${fN}`;
