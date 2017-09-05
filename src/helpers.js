@@ -16,3 +16,7 @@ export function clearDirectory(target) {
 export function getFunctionSignature(signature) {
   return new Keccak(256).update(signature).digest('hex').substr(0, 8);
 }
+
+export function getNpmCommandName() {
+  return /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
+}

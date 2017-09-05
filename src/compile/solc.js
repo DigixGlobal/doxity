@@ -7,7 +7,7 @@ import compile from 'truffle-compile';
 export default function (src) {
   // detect if we're in a truffle project
   return new Promise((resolve) => {
-    if (fs.existsSync(`${process.env.PWD}/truffle.js`)) {
+    if (fs.existsSync(`${process.cwd()}/truffle.js`)) {
       const config = Config.default();
       config.resolver = new Resolver(config);
       config.rawData = true;
@@ -18,7 +18,7 @@ export default function (src) {
             const { metadata, ...rest } = res[k].rawData;
             const { output, settings } = JSON.parse(metadata);
             const fN = Object.keys(settings.compilationTarget)[0];
-            const fileName = fN.indexOf(process.env.PWD) === 0 ? fN : `${process.env.PWD}/node_modules/${fN}`;
+            const fileName = fN.indexOf(process.cwd()) === 0 ? fN : `${process.cwd()}/node_modules/${fN}`;
             return {
               ...o,
               [k]: { ...rest, ...output, fileName },
@@ -35,7 +35,7 @@ export default function (src) {
           const fileFragments = file.split('/');
           const contractName = fileFragments[fileFragments.length - 1].split('.sol')[0];
           const contract = res.contracts[k];
-          const fileName = `${process.env.PWD}/${k.split(':')[0]}`;
+          const fileName = `${process.cwd()}/${k.split(':')[0]}`;
           return {
             ...o,
             [contractName]: {

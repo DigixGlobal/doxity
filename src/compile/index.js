@@ -5,7 +5,7 @@ import glob from 'glob';
 import toml from 'toml';
 import tomlify from 'tomlify-j0.4';
 
-import { CONFIG_FILE, README_FILE, README_TARGET, DOXITYRC_FILE } from '../constants';
+import { CONFIG_FILE, README_FILE, README_TARGET, DOXITYRC_FILE, DEFAULT_PAGES_DIR, DEFAULT_SRC_DIR } from '../constants';
 
 import solc from './solc';
 import parseAbi from './parse-abi';
@@ -31,7 +31,7 @@ function compile({ whitelist, contracts, output, target, version }) {
     // let address;
     // if (interaction) {
     //   try {
-    //     const instance = require(`${process.env.PWD}/build/contracts/${contractName}.sol.js`);
+    //     const instance = require(`${process.cwd()}/build/contracts/${contractName}.sol.js`);
     //     address = instance.all_networks[interaction.network].address;
     //   } catch (e) { /* do noithing */ }
     // }
@@ -40,7 +40,7 @@ function compile({ whitelist, contracts, output, target, version }) {
     const data = {
       author,
       title,
-      fileName: fileName.replace(process.env.PWD, ''),
+      fileName: fileName.replace(process.cwd(), ''),
       // address,
       name: contractName,
       // only pass these if they are whitelisted
@@ -56,7 +56,7 @@ function compile({ whitelist, contracts, output, target, version }) {
   // TODO find in a better way?
   let pkgConfig = {};
   try {
-    pkgConfig = JSON.parse(fs.readFileSync(`${process.env.PWD}/package.json`));
+    pkgConfig = JSON.parse(fs.readFileSync(`${process.cwd()}/package.json`));
   } catch (e) {
     // console.log('package.json not found, add one for more output');
   }
@@ -73,7 +73,7 @@ function compile({ whitelist, contracts, output, target, version }) {
     buildTime: new Date(),
   };
 
-  const configFile = `${process.env.PWD}/${target}/${CONFIG_FILE}`;
+  const configFile = `${process.cwd()}/${target}/${CONFIG_FILE}`;
 
   try { // try marginging with old config
     config = { ...toml.parse(fs.readFileSync(configFile).toString()), ...config };
@@ -83,7 +83,7 @@ function compile({ whitelist, contracts, output, target, version }) {
   }
 
   try { // try marginging with doxity config
-    config = { ...config, ...JSON.parse(fs.readFileSync(`${process.env.PWD}/${DOXITYRC_FILE}`).toString()) };
+    config = { ...config, ...JSON.parse(fs.readFileSync(`${process.cwd()}/${DOXITYRC_FILE}`).toString()) };
   } catch (e) { /* do nothing */ }
 
   // write the config
@@ -92,8 +92,8 @@ function compile({ whitelist, contracts, output, target, version }) {
 
   // copy the readme
   try {
-    const readmeFile = glob.sync(`${process.env.PWD}/${README_FILE}`, { nocase: true })[0];
-    const readmeTarget = `${process.env.PWD}/${target}/${README_TARGET}`;
+    const readmeFile = glob.sync(`${process.cwd()}/${README_FILE}`, { nocase: true })[0];
+    const readmeTarget = `${process.cwd()}/${target}/${README_TARGET}`;
     if (fs.existsSync(readmeTarget)) { fs.unlinkSync(readmeTarget); }
     fs.writeFileSync(readmeTarget, fs.readFileSync(readmeFile));
   } catch (e) {
@@ -104,7 +104,11 @@ function compile({ whitelist, contracts, output, target, version }) {
 }
 
 export default function (opts) {
-  const output = `${process.env.PWD}/${opts.target}/${opts.dir}`;
+  if (!opts.dir)
+    opts.dir = DEFAULT_PAGES_DIR;
+  if (!opts.src)
+    opts.src = DEFAULT_SRC_DIR;
+  const output = `${process.cwd()}/${opts.target}/${opts.dir}`;
   if (!fs.existsSync(output)) { throw new Error(`Output directory ${output} not found, are you in the right directory?`); }
   // clear out the output folder (remove all json files)
   glob.sync(`${output}/*.json`).forEach(file => fs.unlinkSync(file));
