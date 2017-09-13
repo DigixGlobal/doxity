@@ -17,13 +17,20 @@ export default function (contract) {
     // TODO map outputs properly once compiler splits them out
     // in the meantime, use json array
     // parse devDocs.return as a json object
+    let outputParams;
     let outputs;
     try {
-      const outputParams = JSON.parse(devDocs.return);
-      outputs = method.outputs.map(param => ({ ...param, description: outputParams[param.name] }));
+      outputParams = JSON.parse(devDocs.return);
     } catch (e) {
-      outputs = method.outputs;
+      try {
+        const split = devDocs.return.split(' ');
+        const name = split.shift();
+        outputParams = { [name]: split.join(' ') };
+      } catch (e2) { /*  */ }
     }
+    try {
+      outputs = method.outputs.map(param => ({ ...param, description: outputParams[param.name] }));
+    } catch (e) { /*  */ }
     // END HACK
 
     return {

@@ -15,13 +15,18 @@ export default function (src) {
         if (err) { throw err; }
         resolve({
           contracts: Object.keys(res).reduce((o, k) => {
-            const { metadata, ...rest } = res[k].rawData;
-            const { output, settings } = JSON.parse(metadata);
-            const fN = Object.keys(settings.compilationTarget)[0];
-            const fileName = fN.indexOf(process.env.PWD) === 0 ? fN : `${process.env.PWD}/node_modules/${fN}`;
+            const { metadata, ...data } = res[k].rawData;
+            try {
+              const parsed = JSON.parse(metadata);
+              const fN = Object.keys(parsed.settings.compilationTarget)[0];
+              data.fileName = fN.indexOf(process.env.PWD) === 0 ? fN : `${process.env.PWD}/node_modules/${fN}`;
+              data.output = parsed.output;
+            } catch (e) {
+              console.log(`⚠️ Error parsing Contract: ${k}`);
+            }
             return {
               ...o,
-              [k]: { ...rest, ...output, fileName },
+              [k]: data,
             };
           }, {}),
         });

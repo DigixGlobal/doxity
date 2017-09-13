@@ -25,6 +25,7 @@ function compile({ whitelist, contracts, output, target, version }) {
     const myWhitelist = { ...defaultWhitelist, ...(whitelist || {})[contractName] };
     // get the source file
     const { fileName } = contract;
+    if (!fileName) { return null; } // there was an error parsing...
     // TODO fix me
     // const interaction = {};
     // get deploy info from truffle
