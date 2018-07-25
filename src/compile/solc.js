@@ -1,10 +1,54 @@
 import fs from 'fs';
+import path from 'path';
 import childProcess from 'child_process';
 import Config from 'truffle-config';
 import Resolver from 'truffle-resolver';
 import compile from 'truffle-compile';
 
 export default function (src) {
+  function expandPath(src) {
+    if (!pathEndsWithWildcard(src)) {
+     return src;
+    }
+
+    const basePath = removeLastCharacter(src);
+    const files = traverseDir(basePath, []);
+    return files.join(" ");
+  };
+
+  function pathEndsWithWildcard(path) {
+    return path[path.length - 1] === "*";
+  };
+
+  function removeLastCharacter(text) {
+    return text.substring(0, text.length - 1);
+  };
+
+  function traverseDir(dir, files) {
+    files = files || [];
+    const dirContents = fs.readdirSync(dir);
+    dirContents.forEach(function(dirEntry) {
+       const fileName = path.join(dir, dirEntry);
+       if (fs.statSync(fileName).isDirectory()) {
+           files = traverseDir(fileName, files);
+       }
+       else {
+           files.push(fileName);
+       }
+    });
+    return files;
+  };
+
+  function extractFilenameFromContract(contractKey){
+    const separatorPosition = contractKey.lastIndexOf(":");
+    return contractKey.substring(0, separatorPosition);
+  };
+
+  function extractNameFromContract(contractKey) {
+    const separatorPosition = contractKey.lastIndexOf(":");
+    return contractKey.substring(separatorPosition + 1);
+  };
+
   // detect if we're in a truffle project
   return new Promise((resolve) => {
     if (fs.existsSync(`${process.env.PWD}/truffle.js`)) {
@@ -32,15 +76,18 @@ export default function (src) {
         });
       });
     } else {
-      const exec = `solc --combined-json abi,asm,ast,bin,bin-runtime,clone-bin,devdoc,interface,opcodes,srcmap,srcmap-runtime,userdoc ${src}`;
+      const exec = `solc --combined-json abi,asm,ast,bin,bin-runtime,clone-bin,devdoc,interface,opcodes,srcmap,srcmap-runtime,userdoc ${expandPath(src)}`;
       const res = JSON.parse(childProcess.execSync(exec));
       resolve({
         contracts: Object.keys(res.contracts).reduce((o, k) => {
-          const file = k.split(':')[0];
-          const fileFragments = file.split('/');
-          const contractName = fileFragments[fileFragments.length - 1].split('.sol')[0];
           const contract = res.contracts[k];
-          const fileName = `${process.env.PWD}/${k.split(':')[0]}`;
+          let fileName = extractFilenameFromContract(k);
+          const contractName = extractNameFromContract(k);
+
+          if (!path.isAbsolute(fileName)) {
+            fileName = path.join(process.env.PWD, fileName);
+          }
+
           return {
             ...o,
             [contractName]: {
