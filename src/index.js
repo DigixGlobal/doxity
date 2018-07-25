@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 
 import {
   DOXITYRC_FILE,
@@ -36,10 +37,11 @@ function populateArguments(passed) {
   };
   // merge with .doxityrc
   let saved = {};
+  let configFilePath = path.join(process.env.PWD, DOXITYRC_FILE);
   try {
-    saved = JSON.parse(fs.readFileSync(`${process.env.PWD}/${DOXITYRC_FILE}`).toString());
+    saved = JSON.parse(fs.readFileSync(configFilePath).toString());
   } catch (e) {
-    console.log('.doxityrc not found or unreadable');
+    console.log('.doxityrc not found or unreadable. Searched in %s', configFilePath);
   }
   // return merge
   return { ...defaults, ...saved, ...passed };

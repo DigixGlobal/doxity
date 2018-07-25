@@ -11,8 +11,31 @@ import { DOXITYRC_FILE } from './constants';
 export default function (args) {
   const { source, target } = args;
   // TODO check folder exists...
-  const absoluteTarget = `${process.env.PWD}/${target}`;
-  const tmpTarget = path.resolve(`${process.env.PWD}/${target}/../doxity-tmp-${new Date()}`);
+
+  function isWindows() {
+    return process.platform === "win32";
+  };
+
+  function addLeadingZeroIfNeeded(value) {
+    if (value < 10) {
+      return "0" + value;
+    } else {
+      return "" + value;
+    }
+  };
+
+  const absoluteTarget = path.join(process.env.PWD, target);
+
+  const now = new Date();
+  const year = now.getUTCFullYear();
+  const month = addLeadingZeroIfNeeded(now.getUTCMonth());
+  const day = addLeadingZeroIfNeeded(now.getUTCDate());
+  const hours = addLeadingZeroIfNeeded(now.getUTCHours());
+  const minutes = addLeadingZeroIfNeeded(now.getUTCMinutes());
+  const seconds = addLeadingZeroIfNeeded(now.getUTCSeconds());
+  const timestamp = `${year}${month}${day}${hours}${minutes}${seconds}`;
+
+  const tmpTarget = path.resolve(path.join(process.env.PWD, target, '/../doxity-tmp-' + timestamp));
   // clear the target dir
   clearDirectory(absoluteTarget)
   .then(() => {
@@ -27,7 +50,8 @@ export default function (args) {
   })
   // rename the downloaded folder to doxity
   .then(() => {
-    fs.renameSync(`${tmpTarget}/${fs.readdirSync(tmpTarget)[0]}`, absoluteTarget);
+    const tempTargetFilename = path.join(tmpTarget, fs.readdirSync(tmpTarget)[0]);
+    fs.renameSync(tempTargetFilename, absoluteTarget);
     fs.rmdirSync(tmpTarget);
   })
   .then(() => {
@@ -41,14 +65,16 @@ export default function (args) {
       process.stdout.write(`\r${seq[i]} ${message}`);
     }, 1000 / 24);
     // install the deps
-    const npmInstall = childProcess.spawn('npm', ['install'], { cwd: absoluteTarget });
+    const npmCommand = isWindows() ? "npm.cmd" : "npm";
+    const npmInstall = childProcess.spawn(npmCommand, ['install'], { cwd: absoluteTarget });
+
     npmInstall.stdout.removeAllListeners('data');
     npmInstall.stderr.removeAllListeners('data');
     npmInstall.stdout.pipe(process.stdout);
     npmInstall.stderr.pipe(process.stderr);
     npmInstall.on('close', () => {
       clearInterval(spinner);
-      const doxityrcFile = `${process.env.PWD}/${DOXITYRC_FILE}`;
+      const doxityrcFile = path.join(process.env.PWD, DOXITYRC_FILE);
       // overwrite doxityrc file
       if (fs.existsSync(doxityrcFile)) { fs.unlinkSync(doxityrcFile); }
       fs.writeFileSync(doxityrcFile, `${JSON.stringify(args, null, 2)}\n`);

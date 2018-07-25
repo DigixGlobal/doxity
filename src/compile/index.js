@@ -1,6 +1,7 @@
 /* eslint-disable global-require */
 
 import fs from 'fs';
+import path from 'path';
 import glob from 'glob';
 import toml from 'toml';
 import tomlify from 'tomlify-j0.4';
@@ -105,7 +106,7 @@ function compile({ whitelist, contracts, output, target, version }) {
 }
 
 export default function (opts) {
-  const output = `${process.env.PWD}/${opts.target}/${opts.dir}`;
+  const output = path.join(process.env.PWD, opts.target, opts.dir);
   if (!fs.existsSync(output)) { throw new Error(`Output directory ${output} not found, are you in the right directory?`); }
   // clear out the output folder (remove all json files)
   glob.sync(`${output}/*.json`).forEach(file => fs.unlinkSync(file));
