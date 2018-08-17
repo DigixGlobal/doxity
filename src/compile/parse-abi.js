@@ -5,8 +5,8 @@ export default function (contract) {
     // get find relevent docs
     const inputParams = method.inputs || [];
     const signature = method.name && `${method.name}(${inputParams.map(i => i.type).join(',')})`;
-    const devDocs = (contract.devdoc.methods || {})[signature] || {};
-    const userDocs = (contract.userdoc.methods || {})[signature] || {};
+    const devDocs = (contract.metadata.devdoc.methods || {})[signature] || {};
+    const userDocs = (contract.metadata.userdoc.methods || {})[signature] || {};
     // map abi inputs to devdoc inputs
     const params = devDocs.params || {};
     const inputs = inputParams.map(param => ({ ...param, description: params[param.name] }));

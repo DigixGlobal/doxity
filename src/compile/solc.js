@@ -2,7 +2,7 @@ import fs from 'fs';
 import childProcess from 'child_process';
 import Config from 'truffle-config';
 import Resolver from 'truffle-resolver';
-import compile from 'truffle-compile';
+import compile from '@digix/truffle-compile';
 
 export default function (src) {
   // detect if we're in a truffle project
@@ -20,7 +20,7 @@ export default function (src) {
               const parsed = JSON.parse(metadata);
               const fN = Object.keys(parsed.settings.compilationTarget)[0];
               data.fileName = fN.indexOf(process.env.PWD) === 0 ? fN : `${process.env.PWD}/node_modules/${fN}`;
-              data.output = parsed.output;
+              data.metadata = parsed.output;
             } catch (e) {
               console.log(`⚠️ Error parsing Contract: ${k}`);
             }
@@ -46,9 +46,11 @@ export default function (src) {
             [contractName]: {
               ...contract,
               fileName,
-              abi: JSON.parse(contract.abi),
-              devdoc: JSON.parse(contract.devdoc),
-              userdoc: JSON.parse(contract.userdoc),
+              metadata: {
+                abi: JSON.parse(contract.abi),
+                devdoc: JSON.parse(contract.devdoc),
+                userdoc: JSON.parse(contract.userdoc),
+              },
             },
           };
         }, {}),

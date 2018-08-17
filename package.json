@@ -1,6 +1,6 @@
 {
-  "name": "@digix/doxity",
-  "version": "0.5.2",
+  "name": "@digix/doxity-solc",
+  "version": "0.6.0",
   "description": "Documentation Generator for Solidity Contracts",
   "main": "lib/index.js",
   "scripts": {
@@ -41,7 +41,7 @@
     "tar.gz": "^1.0.5",
     "toml": "^2.3.0",
     "tomlify-j0.4": "^1.0.1",
-    "truffle-compile": "git://github.com/digixglobal/truffle-compile.git#017e1962623f7e84bd0c52d8bea8bf278ae79f5e",
+    "@digix/truffle-compile": "^3.0.13",
     "truffle-config": "^1.0.2",
     "truffle-resolver": "^3.0.0"
   }

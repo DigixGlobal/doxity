@@ -36,8 +36,8 @@ function compile({ whitelist, contracts, output, target, version }) {
     //     address = instance.all_networks[interaction.network].address;
     //   } catch (e) { /* do noithing */ }
     // }
-    const { bin, opcodes, abi, devdoc } = contract;
-    const { author, title } = devdoc;
+    const { bin, opcodes, abi, metadata } = contract;
+    const { author, title } = metadata.devdoc;
     const data = {
       author,
       title,
