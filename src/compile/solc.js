@@ -32,7 +32,7 @@ export default function (src) {
         });
       });
     } else {
-      const exec = `solc --combined-json abi,asm,ast,bin,bin-runtime,clone-bin,devdoc,interface,opcodes,srcmap,srcmap-runtime,userdoc ${src}`;
+      const exec = `solc --combined-json abi,asm,ast,bin,bin-runtime,devdoc,interface,opcodes,srcmap,srcmap-runtime,userdoc ${src}`;
       const res = JSON.parse(childProcess.execSync(exec));
       resolve({
         contracts: Object.keys(res.contracts).reduce((o, k) => {
